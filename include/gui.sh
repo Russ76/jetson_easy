@@ -123,8 +123,11 @@ submenu_default()
     local default_value
     default_value=$(whiptail --title "$MODULE_NAME" --radiolist \
     "$MODULE_DESCRIPTION
+     Do you want run this script?
      
-     Do you want run this script?" 15 60 2 \
+[up arrow | down arrow] = Move on menu
+[space] = Select option
+[enter] = Save option" 17 60 2 \
     "YES" "launch all updates" $(submenu_load_check "YES") \
     "NO" "Stop upgrades" $(submenu_load_check "NO") 3>&1 1>&2 2>&3)
      
@@ -276,12 +279,15 @@ menu_load_list()
 menu_configuration_menu()
 {
     echo "You can configure your Jetson with different modules."
-    if [ $GUI_SAVED = 1 ] ; then
-        echo "-- Configuration stored in $MODULES_CONFIG!"
-    else
-        echo ""
-    fi
+    #if [ $GUI_SAVED = 1 ] ; then
+    #    echo "-- Configuration stored in $MODULES_CONFIG!"
+    #else
+    #    echo ""
+    #fi
     echo "Choose your option:"
+    echo "[up arrow | down arrow] = Move on menu"
+    # echo "[space] = Select option"
+    echo "[enter] = Option menu"
     # Clear GUI status information
     GUI_SAVED=0
 }
@@ -303,13 +309,17 @@ menu_configuration()
         exitstatus=$?
         if [ $exitstatus = 0 ]; then
             # Load submenu only if is not "Start-->" or "<--Back"
-            if [ $OPTION == "Save" ]
-            then
+            if [ $OPTION == "Save" ] ; then
                 # Save modification
                 modules_save $MODULES_CONFIG
+                # Show message
                 GUI_SAVED=1
-            elif [[ $OPTION != "Start-->" && $OPTION != "<--Back" ]]
-            then
+                # Save only if is the local machine
+                if [ $MODULE_IM_HOST == 1 ] ; then
+                    # Save
+                    exit 15
+                fi
+            elif [[ $OPTION != "Start-->" && $OPTION != "<--Back" ]] ; then
                 submenu_configuration "${MENU_REFERENCE[$OPTION*2+1]}"
             fi
         else

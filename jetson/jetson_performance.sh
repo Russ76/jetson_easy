@@ -5,10 +5,10 @@ if [ true != "$INIT_D_SCRIPT_SOURCED" ] ; then
 fi
 ### BEGIN INIT INFO
 # Provides:          jetson_performance
-# Required-Start:    $remote_fs $syslog
-# Required-Stop:     $remote_fs $syslog
+# Required-Start:    $remote_fs $all
+# Required-Stop:     
 # Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
+# Default-Stop:      
 # Short-Description: Script to use the jetson_clock.sh like service
 # Description:       Script to use the jetson_clock.sh like service.
 #                    For NVIDIA Jetson TX2 is controlled the NVP model.
@@ -99,13 +99,16 @@ start()
         # Check which version is L4T is loaded
         # if is before the 28.1 require to launch jetson_clock.sh only 60sec before the boot
         # https://devtalk.nvidia.com/default/topic/1027388/jetson-tx2/jetson_clock-sh-1-minute-delay/
-        if [ $(echo $JETSON_L4T'<28.1' | bc -l) -eq 1 ]
-        then
+        # ----
+        # Temporary disabled to find a best way to start this service.
+        # The service ondemand disabled doesn't improve the performance of the start-up
+        # ----
+        #if [ $(echo $JETSON_L4T'<28.1' | bc -l) -eq 1 ] ; then
+        if [ $JETSON_BOARD = "TX2" ] || [ $JETSON_BOARD = "TX2i" ] ; then
             # Time from boot 
             local BOOT_TIME=$(cat /proc/uptime | cut -f1 -d " ")
             # Wait a minute from boot before start
-            if [ $(echo $BOOT_TIME'<'$((JETSON_PERFORMANCE_WAIT_TIME+1)) | bc -l) -eq 1 ] 
-            then
+            if [ $(echo $BOOT_TIME'<'$((JETSON_PERFORMANCE_WAIT_TIME+1)) | bc -l) -eq 1 ] ; then
                 local TIME_TO_WAIT=$(echo $((JETSON_PERFORMANCE_WAIT_TIME+1))'-'$BOOT_TIME | bc)
                 echo "Wait from boot other $TIME_TO_WAIT sec..."
                 # Sleep for other time

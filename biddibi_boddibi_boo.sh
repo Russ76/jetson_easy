@@ -101,6 +101,10 @@ loop_gui()
         # Load remote menu
         menu_remote
     else
+        # Set menu selection
+        if [ $MODULE_IM_HOST == "1" ] ; then
+            MENU_SELECTION=$1
+        fi
         # Load GUI menu loop
 	    menu_loop
     fi
@@ -211,6 +215,9 @@ main()
 			    ;;
 			-x) # Internal option in remote mode
 			    MODULE_IM_HOST=1
+			    # Set the page to load
+			    MENU_SELECTION="$2"
+			    shift 1
 			    ;;
 		    *)
 		        usage "Unknown option: $1"
@@ -227,6 +234,13 @@ main()
 	    # Set in Remote mode
 	    MODULE_REMOTE=1
 	    mytitle="Jetson Easy - Remote connection"
+		# check if is installed sshpass
+		if ! dpkg-query -l sshpass > /dev/null; then
+			tput setaf 1
+			echo "Install sshpass..."
+			tput sgr0
+			sudo apt-get install sshpass
+		fi
 	else
 	    mytitle="Jetson Easy on $USER@$HOSTNAME"
 	fi
@@ -240,7 +254,7 @@ main()
         no_gui
 	else
         # Load GUI menu loop
-        loop_gui
+        loop_gui $MENU_SELECTION
 	fi
 }
 

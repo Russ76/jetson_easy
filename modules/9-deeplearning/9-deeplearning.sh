@@ -27,46 +27,10 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Install Deep learning frameworks
 
-# Reference
-# https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
-
-# Patch the board from knowed errors
-MODULE_NAME="Patch $JETSON_DESCRIPTION from known errors"
-MODULE_DESCRIPTION="Patch $JETSON_DESCRIPTION from known errors"
-# Add show option only with Jetpack 3.2
-if [ $(jetson_vercomp $JETSON_JETPACK "3.2") == "0" ] ; then
-    MODULE_DEFAULT=1
-else
-    MODULE_DEFAULT=-1
-fi
-
-# Know errors for Jetpack 3.2
-# https://devtalk.nvidia.com/default/topic/1031736/jetson-tx2/cuda-9-0-samples-do-not-build-with-jetpack-3-2/
-# https://devtalk.nvidia.com/default/topic/1027301/jetson-tx2/jetpack-3-2-mdash-l4t-r28-2-developer-preview-for-jetson-tx2/post/5225602/#5225602
-# https://devtalk.nvidia.com/default/topic/1030831/jetson-tx2/jetpack-3-2-mdash-l4t-r28-2-production-release-for-jetson-tx1-tx2/post/5245450/#5245450
-
-script_run()
-{
-    tput setaf 6
-    echo "Patch $JETSON_DESCRIPTION from known errors"
-    tput sgr0
-    
-    if [ $JETSON_JETPACK == "3.2" ] ; then
-        # Fix apt-get update
-        # https://devtalk.nvidia.com/default/topic/1030831/jetson-tx2/jetpack-3-2-mdash-l4t-r28-2-production-release-for-jetson-tx1-tx2/post/5245450/#5245450
-        echo "Fix keys apt-get update"
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F60F4B3D7FA2AF80
-        sudo apt-get update
-        # Load source
-        source jp32/patch.sh
-        # Run cuda examples patch
-        jp32_patch_cuda_examples
-        echo "Pach opencv in $JETSON_JETPACK"
-        # Run patcher
-        jp32_patch_opencv3
-    fi
-    
-}
-
+# Default variables load
+MODULE_NAME="Install deep learning frameworks"
+MODULE_DESCRIPTION="With this module you can install other deep learning modules, such as: TensorFlow, Caffe, Pytorch and other"
+MODULE_DEFAULT=0
 
